@@ -168,6 +168,8 @@ body {
     grid-gap: 5px;
     width: 100%;
     max-width: 1000px;
+    margin: 0 auto; /* Center the grid */
+    padding: 0 20px; /* Add padding to the sides */
     margin-bottom: 20px; /* Added margin-bottom */
     /* Removed flex-grow to prevent stretching */
 }
@@ -241,7 +243,155 @@ body {
 }
 
 /* Modal Styles */
-/* ... existing styles ... */
+.modal-overlay {
+    position: fixed; /* Changed from absolute to fixed */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 100; /* Ensure it's on top */
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    width: 80%;
+}
+
+.modal-content h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.modal-content p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.modal-content a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.modal-content a:hover {
+    text-decoration: underline;
+}
+
+.speed-btn {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db;
+    color: #fff;
+    cursor: pointer;
+}
+
+.speed-btn:hover {
+    background-color: #2980b9;
+}
+
+/* Game Over Screen */
+.game-over-overlay {
+    position: fixed; /* Changed from absolute to fixed */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 100; /* Ensure it's on top */
+}
+
+.game-over-content {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 500px;
+    width: 80%;
+}
+
+.game-over-content h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.game-over-content p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.game-over-content button {
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db;
+    color: #fff;
+    cursor: pointer;
+}
+
+.game-over-content button:hover {
+    background-color: #2980b9;
+}
+
+/* Success Screen */
+.success-overlay {
+    position: fixed; /* Changed from absolute to fixed */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 100; /* Ensure it's on top */
+}
+
+.success-content {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 500px;
+    width: 80%;
+}
+
+.success-content h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.success-content p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.success-content button {
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    background-color: #2ecc71;
+    color: #fff;
+    cursor: pointer;
+}
+
+.success-content button:hover {
+    background-color: #27ae60;
+}
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
@@ -257,5 +407,6 @@ body {
 
     .boxes-grid {
         grid-template-columns: repeat(5, 1fr);
+        padding: 0 10px; /* Adjust padding on smaller screens */
     }
 }

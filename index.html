@@ -2,40 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>100 Prisoners Simulation</title>
     <style>
-        /* Reset some default styles */
+        /* Reset Styles */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+        /* Body Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
             display: flex;
-            height: 100vh;
-            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        /* Main container using Flexbox */
+        /* Main Container */
         .container {
             display: flex;
+            max-width: 1200px;
             width: 100%;
-            height: 100%;
+            height: 90vh;
+            margin: 0 auto;
         }
 
         /* Left Panel */
         .left-panel {
             width: 25%;
-            background-color: #ffffff;
+            background-color: #fff;
             border-right: 1px solid #ddd;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            overflow: hidden;
         }
 
         /* Buttons */
@@ -51,25 +54,19 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            color: #fff;
         }
 
         .buttons button#manual-btn {
             background-color: #3498db;
-            color: #fff;
-        }
-
-        .buttons button#manual-btn:hover {
-            background-color: #2980b9;
         }
 
         .buttons button#auto-btn {
             background-color: #2ecc71;
-            color: #fff;
         }
 
-        .buttons button#auto-btn:hover {
-            background-color: #27ae60;
+        .buttons button#optimal-btn {
+            background-color: #9b59b6;
         }
 
         /* Prisoners List */
@@ -80,122 +77,178 @@
         }
 
         .prisoner {
-            font-size: 24px;
+            display: flex;
+            align-items: center;
+            font-size: 18px;
             margin: 5px 0;
-            transition: opacity 0.3s;
-        }
-
-        .prisoner.upcoming {
-            opacity: 0.3;
+            opacity: 0.5;
+            transition: opacity 0.3s, background-color 0.3s;
+            padding: 5px;
+            border-radius: 5px;
         }
 
         .prisoner.done {
             opacity: 1;
+            color: #2ecc71;
+        }
+
+        .prisoner.highlight {
+            background-color: #ffeb3b;
+            opacity: 1;
+        }
+
+        .prisoner-number {
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* Tries Left Counter */
+        .tries-counter {
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .tries-counter .turns-icon {
+            margin-right: 10px;
+            font-size: 24px;
         }
 
         /* Center Panel */
         .center-panel {
             width: 75%;
+            background-color: #fafafa;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #fafafa;
-            padding: 20px;
-            overflow: auto;
+            position: relative;
         }
 
         /* Boxes Grid */
         .boxes-grid {
             display: grid;
-            grid-template-columns: repeat(10, 60px);
+            grid-template-columns: repeat(10, 1fr);
             grid-gap: 10px;
+            width: 100%;
+            max-width: 1000px;
         }
 
         .box {
-            width: 60px;
-            height: 60px;
-            background-color: #ffffff;
+            width: 100%;
+            aspect-ratio: 1; /* Ensure boxes are squares */
+            background-color: #fff;
             border: 2px solid #3498db;
             border-radius: 5px;
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: transform 0.2s, background-color 0.3s;
+            overflow: visible; /* Allow hover effect to not be cut off */
         }
 
         .box:hover {
+            transform: scale(1.02); /* Reduced scale to prevent cut-off */
             background-color: #ecf0f1;
-            transform: scale(1.05);
         }
 
-        .box.open {
+        .box-number {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .box-content {
+            font-size: 24px;
+            font-weight: bold;
+            padding-top: 10px; /* Added padding to separate from box number */
+        }
+
+        .box-content.hidden {
+            visibility: hidden;
+        }
+
+        /* Success Animation */
+        .box.success {
             background-color: #2ecc71;
             color: #fff;
-            cursor: default;
+            animation: success-pulse 1s infinite;
         }
 
-        /* Scrollbar Styling */
-        .prisoners-list::-webkit-scrollbar, .boxes-grid::-webkit-scrollbar {
-            width: 8px;
+        @keyframes success-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
-        .prisoners-list::-webkit-scrollbar-thumb, .boxes-grid::-webkit-scrollbar-thumb {
-            background-color: #ccc;
-            border-radius: 4px;
+        /* Highlighted Box */
+        .box.highlight {
+            border-color: #ffeb3b;
+            background-color: #fff9c4;
         }
 
-        .prisoners-list::-webkit-scrollbar-thumb:hover, .boxes-grid::-webkit-scrollbar-thumb:hover {
-            background-color: #999;
+        /* Game Over Screen */
+        .game-over-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
         }
 
-        /* Responsive Design */
+        .game-over-content {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 500px;
+            width: 80%;
+        }
+
+        .game-over-content h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .game-over-content p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .game-over-content button {
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .left-panel {
-                width: 35%;
-            }
-
-            .center-panel {
-                width: 65%;
-            }
-
-            .boxes-grid {
-                grid-template-columns: repeat(8, 50px);
-                grid-gap: 8px;
-            }
-
-            .box {
-                width: 50px;
-                height: 50px;
-            }
-
-            .prisoner {
-                font-size: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
             .container {
                 flex-direction: column;
+                height: auto;
             }
 
             .left-panel, .center-panel {
                 width: 100%;
-                height: 50%;
+                height: auto;
             }
 
             .boxes-grid {
-                grid-template-columns: repeat(5, 40px);
-                grid-gap: 5px;
-            }
-
-            .box {
-                width: 40px;
-                height: 40px;
-            }
-
-            .prisoner {
-                font-size: 18px;
+                grid-template-columns: repeat(5, 1fr);
             }
         }
     </style>
@@ -208,56 +261,325 @@
         <div class="buttons">
             <button id="manual-btn">Manual Simulation</button>
             <button id="auto-btn">Automatic Simulation</button>
+            <button id="optimal-btn">Optimal Solution</button>
+        </div>
+        <!-- Tries Left Counter -->
+        <div class="tries-counter" id="tries-counter">
+            <span class="turns-icon">🔢</span>
+            Tries Left: <span id="tries-left">50</span>
         </div>
         <!-- Prisoners List -->
         <div class="prisoners-list" id="prisoners-list">
-            <!-- Example Prisoners -->
-            <!-- Repeat this block 100 times with appropriate classes -->
-            <!-- <div class="prisoner upcoming">👨</div> -->
+            <!-- Prisoners will be added here -->
         </div>
     </div>
 
     <!-- Center Panel -->
     <div class="center-panel">
         <div class="boxes-grid" id="boxes-grid">
-            <!-- 100 Boxes -->
-            <!-- Example Box -->
-            <!-- <div class="box" data-box="1">1</div> -->
+            <!-- Boxes will be added here -->
+        </div>
+        <!-- Game Over Overlay -->
+        <div class="game-over-overlay" id="game-over-overlay">
+            <div class="game-over-content">
+                <h1>Game Over!</h1>
+                <p>The prisoners failed to find their numbers.</p>
+                <button id="restart-btn">Restart Game</button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Optional: Script to Populate Prisoners and Boxes -->
+<!-- JavaScript -->
 <script>
-    // Populate Prisoners List
+    // Arrays to store prisoners and boxes
+    const prisoners = []; // Stores prisoner data
+    const boxes = [];     // Stores box data
+
+    let currentPrisoner = null;
+    let triesLeft = 50;
+    let simulationMode = null; // 'manual', 'automatic', 'optimal'
+
+    // Initialize Prisoners
     const prisonersList = document.getElementById('prisoners-list');
     for (let i = 1; i <= 100; i++) {
         const prisoner = document.createElement('div');
-        prisoner.classList.add('prisoner', 'upcoming'); // Initially all are upcoming
+        prisoner.classList.add('prisoner');
         prisoner.id = `prisoner-${i}`;
-        prisoner.textContent = '👨';
+        prisoner.dataset.number = i;
+
+        const prisonerNumber = document.createElement('span');
+        prisonerNumber.classList.add('prisoner-number');
+        prisonerNumber.textContent = `#${i}`;
+
+        const prisonerIcon = document.createElement('span');
+        prisonerIcon.textContent = '👨';
+
+        prisoner.appendChild(prisonerNumber);
+        prisoner.appendChild(prisonerIcon);
+
         prisonersList.appendChild(prisoner);
+
+        prisoners.push({
+            number: i,
+            element: prisoner,
+            status: 'upcoming', // 'upcoming', 'current', 'done'
+        });
     }
 
-    // Populate Boxes Grid
+    // Initialize Boxes
     const boxesGrid = document.getElementById('boxes-grid');
     for (let i = 1; i <= 100; i++) {
         const box = document.createElement('div');
         box.classList.add('box');
-        box.dataset.box = i;
-        box.textContent = i;
+        box.dataset.boxNumber = i;
+
+        // Box Number (Identifier)
+        const boxNumber = document.createElement('div');
+        boxNumber.classList.add('box-number');
+        boxNumber.textContent = `Box ${i}`;
+        box.appendChild(boxNumber);
+
+        // Box Content (Prisoner Number)
+        const boxContent = document.createElement('div');
+        boxContent.classList.add('box-content');
+        boxContent.textContent = i; // Initial prisoner number
+        box.appendChild(boxContent);
+
         boxesGrid.appendChild(box);
+
+        boxes.push({
+            boxNumber: i,
+            prisonerNumber: i, // Will be shuffled later
+            element: box,
+        });
     }
 
-    // Example: Event Listeners for Buttons (to be implemented)
-    document.getElementById('manual-btn').addEventListener('click', () => {
-        // Implement manual simulation logic here
-        console.log('Manual Simulation Started');
+    // Shuffle Function
+    function shuffleBoxes() {
+        const prisonerNumbers = boxes.map(box => box.prisonerNumber);
+        for (let i = prisonerNumbers.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [prisonerNumbers[i], prisonerNumbers[j]] = [prisonerNumbers[j], prisonerNumbers[i]];
+        }
+        boxes.forEach((box, index) => {
+            box.prisonerNumber = prisonerNumbers[index];
+            const boxContent = box.element.querySelector('.box-content');
+            boxContent.textContent = box.prisonerNumber;
+        });
+    }
+
+    // Hide Box Contents
+    function hideBoxContents() {
+        boxes.forEach(box => {
+            const boxContent = box.element.querySelector('.box-content');
+            boxContent.classList.add('hidden');
+        });
+    }
+
+    // Show Box Content
+    function showBoxContent(boxNumber) {
+        const box = boxes.find(b => b.boxNumber == boxNumber);
+        if (box) {
+            const boxContent = box.element.querySelector('.box-content');
+            boxContent.classList.remove('hidden');
+        }
+    }
+
+    // Shuffle Animation
+    function shuffleBoxesWithAnimation() {
+        return new Promise(resolve => {
+            boxes.forEach(box => {
+                box.element.classList.add('shuffle-animation');
+            });
+            setTimeout(() => {
+                boxes.forEach(box => {
+                    box.element.classList.remove('shuffle-animation');
+                });
+                shuffleBoxes();
+                resolve();
+            }, 1000);
+        });
+    }
+
+    // Update Tries Left Counter
+    function updateTriesCounter() {
+        const triesLeftElement = document.getElementById('tries-left');
+        triesLeftElement.textContent = triesLeft;
+    }
+
+    // Decrease Tries Left
+    function decreaseTries() {
+        triesLeft--;
+        updateTriesCounter();
+        if (triesLeft <= 0) {
+            gameOver();
+        }
+    }
+
+    // Game Over
+    function gameOver() {
+        const gameOverOverlay = document.getElementById('game-over-overlay');
+        gameOverOverlay.style.display = 'flex';
+    }
+
+    // Reset Game
+    function resetGame() {
+        location.reload();
+    }
+
+    // Highlight Prisoner
+    function highlightPrisoner(prisonerNumber) {
+        // Remove highlight from all prisoners
+        prisoners.forEach(p => p.element.classList.remove('highlight'));
+        // Set current prisoner
+        currentPrisoner = prisoners.find(p => p.number === prisonerNumber);
+        if (currentPrisoner) {
+            currentPrisoner.element.classList.add('highlight');
+        }
+    }
+
+    // Mark Prisoner as Done
+    function markPrisonerAsDone(success) {
+        if (currentPrisoner) {
+            currentPrisoner.status = 'done';
+            currentPrisoner.element.classList.add('done');
+            if (success) {
+                currentPrisoner.element.classList.add('success');
+            }
+            currentPrisoner.element.classList.remove('highlight');
+            currentPrisoner = null;
+        }
+    }
+
+    // Proceed to Next Prisoner
+    function nextPrisoner() {
+        if (currentPrisoner) {
+            let nextNumber = currentPrisoner.number + 1;
+            if (nextNumber > 100) {
+                alert('All prisoners have completed their turns!');
+                resetGame();
+                return;
+            }
+            highlightPrisoner(nextNumber);
+            if (simulationMode === 'automatic') {
+                simulatePrisonerTurn();
+            } else if (simulationMode === 'optimal') {
+                highlightOptimalBox();
+            }
+        }
+    }
+
+    // Simulate Prisoner's Turn
+    function simulatePrisonerTurn() {
+        let attempts = 0;
+        let maxAttempts = 50;
+        let boxNumber = currentPrisoner.number;
+        let success = false;
+
+        function openBox() {
+            if (attempts >= maxAttempts) {
+                markPrisonerAsDone(false);
+                gameOver();
+                return;
+            }
+            attempts++;
+            decreaseTries();
+            showBoxContent(boxNumber);
+            const box = boxes.find(b => b.boxNumber == boxNumber);
+            if (box.prisonerNumber == currentPrisoner.number) {
+                box.element.classList.add('success');
+                success = true;
+                markPrisonerAsDone(true);
+                nextPrisoner();
+            } else {
+                boxNumber = box.prisonerNumber;
+                setTimeout(openBox, 500); // Continue to next box after a short delay
+            }
+        }
+
+        openBox();
+    }
+
+    // Highlight Optimal Box
+    function highlightOptimalBox() {
+        // Remove previous highlights
+        boxes.forEach(box => box.element.classList.remove('highlight'));
+        if (!currentPrisoner) return;
+        let boxNumber = currentPrisoner.number;
+        const box = boxes.find(b => b.boxNumber == boxNumber);
+        if (box) {
+            box.element.classList.add('highlight');
+        }
+    }
+
+    // Event Listeners for Buttons
+
+    // Manual Simulation Button
+    document.getElementById('manual-btn').addEventListener('click', async () => {
+        simulationMode = 'manual';
+        await shuffleBoxesWithAnimation();
+        hideBoxContents();
+        updateTriesCounter();
+        highlightPrisoner(1);
     });
 
-    document.getElementById('auto-btn').addEventListener('click', () => {
-        // Implement automatic simulation logic here
-        console.log('Automatic Simulation Started');
+    // Automatic Simulation Button
+    document.getElementById('auto-btn').addEventListener('click', async () => {
+        simulationMode = 'automatic';
+        await shuffleBoxesWithAnimation();
+        hideBoxContents();
+        updateTriesCounter();
+        highlightPrisoner(1);
+        simulatePrisonerTurn();
+    });
+
+    // Optimal Solution Button
+    document.getElementById('optimal-btn').addEventListener('click', async () => {
+        simulationMode = 'optimal';
+        await shuffleBoxesWithAnimation();
+        hideBoxContents();
+        updateTriesCounter();
+        highlightPrisoner(1);
+        highlightOptimalBox();
+    });
+
+    // Restart Button
+    document.getElementById('restart-btn').addEventListener('click', () => {
+        resetGame();
+    });
+
+    // Box Click Event
+    boxes.forEach(box => {
+        box.element.addEventListener('click', () => {
+            if (!currentPrisoner) return;
+            if (triesLeft <= 0) {
+                gameOver();
+                return;
+            }
+
+            if (simulationMode === 'manual') {
+                decreaseTries();
+                showBoxContent(box.boxNumber);
+                if (box.prisonerNumber == currentPrisoner.number) {
+                    box.element.classList.add('success');
+                    markPrisonerAsDone(true);
+                    nextPrisoner();
+                } else {
+                    // Continue allowing user to click boxes
+                }
+            } else if (simulationMode === 'optimal') {
+                // Only allow clicking the highlighted box
+                if (!box.element.classList.contains('highlight')) return;
+                decreaseTries();
+                showBoxContent(box.boxNumber);
+                if (box.prisonerNumber == currentPrisoner.number) {
+                    box.element.classList.add('success');
+                    markPrisonerAsDone(true);
+                    nextPrisoner();
+                }
+            }
+        });
     });
 </script>
 </body>

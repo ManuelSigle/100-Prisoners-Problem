@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 Prisoners Simulation</title>
+    <style>
+        /* Reset some default styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Main container using Flexbox */
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Left Panel */
+        .left-panel {
+            width: 25%;
+            background-color: #ffffff;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Buttons */
+        .buttons {
+            margin-bottom: 20px;
+        }
+
+        .buttons button {
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .buttons button#manual-btn {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        .buttons button#manual-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .buttons button#auto-btn {
+            background-color: #2ecc71;
+            color: #fff;
+        }
+
+        .buttons button#auto-btn:hover {
+            background-color: #27ae60;
+        }
+
+        /* Prisoners List */
+        .prisoners-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .prisoner {
+            font-size: 24px;
+            margin: 5px 0;
+            transition: opacity 0.3s;
+        }
+
+        .prisoner.upcoming {
+            opacity: 0.3;
+        }
+
+        .prisoner.done {
+            opacity: 1;
+        }
+
+        /* Center Panel */
+        .center-panel {
+            width: 75%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fafafa;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        /* Boxes Grid */
+        .boxes-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 60px);
+            grid-gap: 10px;
+        }
+
+        .box {
+            width: 60px;
+            height: 60px;
+            background-color: #ffffff;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .box:hover {
+            background-color: #ecf0f1;
+            transform: scale(1.05);
+        }
+
+        .box.open {
+            background-color: #2ecc71;
+            color: #fff;
+            cursor: default;
+        }
+
+        /* Scrollbar Styling */
+        .prisoners-list::-webkit-scrollbar, .boxes-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .prisoners-list::-webkit-scrollbar-thumb, .boxes-grid::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 4px;
+        }
+
+        .prisoners-list::-webkit-scrollbar-thumb:hover, .boxes-grid::-webkit-scrollbar-thumb:hover {
+            background-color: #999;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .left-panel {
+                width: 35%;
+            }
+
+            .center-panel {
+                width: 65%;
+            }
+
+            .boxes-grid {
+                grid-template-columns: repeat(8, 50px);
+                grid-gap: 8px;
+            }
+
+            .box {
+                width: 50px;
+                height: 50px;
+            }
+
+            .prisoner {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left-panel, .center-panel {
+                width: 100%;
+                height: 50%;
+            }
+
+            .boxes-grid {
+                grid-template-columns: repeat(5, 40px);
+                grid-gap: 5px;
+            }
+
+            .box {
+                width: 40px;
+                height: 40px;
+            }
+
+            .prisoner {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Left Panel -->
+    <div class="left-panel">
+        <!-- Buttons -->
+        <div class="buttons">
+            <button id="manual-btn">Manual Simulation</button>
+            <button id="auto-btn">Automatic Simulation</button>
+        </div>
+        <!-- Prisoners List -->
+        <div class="prisoners-list" id="prisoners-list">
+            <!-- Example Prisoners -->
+            <!-- Repeat this block 100 times with appropriate classes -->
+            <!-- <div class="prisoner upcoming">👨</div> -->
+        </div>
+    </div>
+
+    <!-- Center Panel -->
+    <div class="center-panel">
+        <div class="boxes-grid" id="boxes-grid">
+            <!-- 100 Boxes -->
+            <!-- Example Box -->
+            <!-- <div class="box" data-box="1">1</div> -->
+        </div>
+    </div>
+</div>
+
+<!-- Optional: Script to Populate Prisoners and Boxes -->
+<script>
+    // Populate Prisoners List
+    const prisonersList = document.getElementById('prisoners-list');
+    for (let i = 1; i <= 100; i++) {
+        const prisoner = document.createElement('div');
+        prisoner.classList.add('prisoner', 'upcoming'); // Initially all are upcoming
+        prisoner.id = `prisoner-${i}`;
+        prisoner.textContent = '👨';
+        prisonersList.appendChild(prisoner);
+    }
+
+    // Populate Boxes Grid
+    const boxesGrid = document.getElementById('boxes-grid');
+    for (let i = 1; i <= 100; i++) {
+        const box = document.createElement('div');
+        box.classList.add('box');
+        box.dataset.box = i;
+        box.textContent = i;
+        boxesGrid.appendChild(box);
+    }
+
+    // Example: Event Listeners for Buttons (to be implemented)
+    document.getElementById('manual-btn').addEventListener('click', () => {
+        // Implement manual simulation logic here
+        console.log('Manual Simulation Started');
+    });
+
+    document.getElementById('auto-btn').addEventListener('click', () => {
+        // Implement automatic simulation logic here
+        console.log('Automatic Simulation Started');
+    });
+</script>
+</body>
+</html>
